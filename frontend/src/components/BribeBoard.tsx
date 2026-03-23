@@ -24,16 +24,19 @@ export function BribeBoard({ address }: BribeBoardProps) {
   const { data: epoch } = useCurrentEpoch();
   const { data: offers, isLoading } = useBribeOffers(epoch?.id);
   const [delegating, setDelegating] = useState<string | null>(null);
+  const [delegated, setDelegated] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const handleDelegate = async (protocolAddr: string) => {
     if (!epoch) return;
     setDelegating(protocolAddr);
     setError(null);
+    setDelegated(null);
     try {
-      await execContract(address, VOTE_REGISTRY, {
+      const hash = await execContract(address, VOTE_REGISTRY, {
         delegate_votes: { epoch_id: epoch.id, protocol: protocolAddr, on_behalf_of: null },
       });
+      setDelegated(hash);
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : "Delegation failed");
     } finally {
@@ -63,10 +66,15 @@ export function BribeBoard({ address }: BribeBoardProps) {
         <span className="text-xs text-slate-600">4% fee</span>
       </div>
 
-      {/* Error */}
       {error && (
         <div className="mx-4 mt-3 bg-red-500/[0.08] border border-red-500/20 rounded-lg px-3 py-2 text-xs text-red-400">
           {error}
+        </div>
+      )}
+      {delegated && (
+        <div className="mx-4 mt-3 bg-emerald-500/[0.08] border border-emerald-500/20 rounded-lg px-3 py-2 text-xs text-emerald-400">
+          ✓ Votes delegated — you will earn INIT when this epoch closes
+          <span className="block text-[10px] text-emerald-600 font-mono mt-0.5">{delegated.slice(0, 16)}…{delegated.slice(-8)}</span>
         </div>
       )}
 
