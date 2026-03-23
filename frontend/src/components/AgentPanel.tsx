@@ -15,12 +15,13 @@ export function AgentPanel({ address }: AgentPanelProps) {
   const { data: sessionKey, refetch } = useSessionKey(address, AGENT_ADDRESS);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [txHash, setTxHash] = useState<string | null>(null);
 
   const handleEnable = async () => {
     if (!AGENT_ADDRESS) { setError("Agent address not configured."); return; }
-    setLoading(true); setError(null);
+    setLoading(true); setError(null); setTxHash(null);
     try {
-      await execContract(address, VOTE_REGISTRY, {
+      const hash = await execContract(address, VOTE_REGISTRY, {
         register_session_key: {
           agent: AGENT_ADDRESS,
           can_delegate: true,
@@ -29,6 +30,9 @@ export function AgentPanel({ address }: AgentPanelProps) {
           allowed_protocols: [],
         },
       });
+      setTxHash(hash);
+      // Wait for block inclusion before refetching
+      await new Promise(r => setTimeout(r, 3000));
       await refetch();
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : "Transaction failed");
@@ -38,9 +42,13 @@ export function AgentPanel({ address }: AgentPanelProps) {
   };
 
   const handleRevoke = async () => {
-    setLoading(true); setError(null);
+    setLoading(true); setError(null); setTxHash(null);
     try {
-      await execContract(address, VOTE_REGISTRY, { revoke_session_key: { agent: AGENT_ADDRESS } });
+      const hash = await execContract(address, VOTE_REGISTRY, {
+        revoke_session_key: { agent: AGENT_ADDRESS },
+      });
+      setTxHash(hash);
+      await new Promise(r => setTimeout(r, 3000));
       await refetch();
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : "Transaction failed");
@@ -67,25 +75,34 @@ export function AgentPanel({ address }: AgentPanelProps) {
         </span>
       </div>
 
-      {error && (
-        <div className="mx-4 mt-3 bg-red-500/[0.08] border border-red-500/20 rounded-lg px-3 py-2 text-xs text-red-400">
-          {error}
-        </div>
-      )}
+      <div className="px-4 py-3 space-y-2">
+        {error && (
+          <div className="bg-red-500/[0.08] border border-red-500/20 rounded-lg px-3 py-2 text-xs text-red-400">
+            {error}
+          </div>
+        )}
 
-      <div className="px-4 py-3">
+        {txHash && (
+          <div className="bg-emerald-500/[0.08] border border-emerald-500/20 rounded-lg px-3 py-2 text-xs text-emerald-400">
+            ✓ Transaction submitted
+            <span className="block text-[10px] text-emerald-600 font-mono mt-0.5 truncate">
+              {txHash.slice(0, 16)}…{txHash.slice(-8)}
+            </span>
+          </div>
+        )}
+
         {isActive ? (
-          <div className="space-y-2">
+          <>
             <p className="text-xs text-emerald-400/80">Managing your votes automatically.</p>
             <button onClick={handleRevoke} disabled={loading}
               className="text-xs text-slate-600 hover:text-red-400 transition-colors disabled:opacity-50">
-              {loading ? "Processing..." : "Revoke access"}
+              {loading ? "Processing…" : "Revoke access"}
             </button>
-          </div>
+          </>
         ) : (
           <button onClick={handleEnable} disabled={loading}
-            className="w-full bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 disabled:opacity-50 text-white text-xs font-semibold rounded-lg py-2 transition-all duration-200">
-            {loading ? "Enabling..." : "Enable AI Agent"}
+            className="w-full bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 disabled:opacity-60 text-white text-xs font-semibold rounded-lg py-2 transition-all duration-200">
+            {loading ? "Waiting for block…" : "Enable AI Agent"}
           </button>
         )}
       </div>

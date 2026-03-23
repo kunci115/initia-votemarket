@@ -11,17 +11,22 @@ export function useSessionKey(userAddress?: string, agentAddress?: string) {
       const query = Buffer.from(
         JSON.stringify({ session_key: { user: userAddress, agent: agentAddress } })
       ).toString("base64");
-      const res = await axios.get(
-        `${RPC}/cosmwasm/wasm/v1/contract/${VOTE_REGISTRY}/smart/${query}`
-      );
-      return res.data.data as {
-        record: {
-          user: string;
-          agent: string;
-          can_delegate: boolean;
-          can_claim: boolean;
-        } | null;
-      };
+      try {
+        const res = await axios.get(
+          `${RPC}/cosmwasm/wasm/v1/contract/${VOTE_REGISTRY}/smart/${query}`
+        );
+        return res.data.data as {
+          record: {
+            user: string;
+            agent: string;
+            can_delegate: boolean;
+            can_claim: boolean;
+          } | null;
+        };
+      } catch {
+        // Contract returns 500 when no session key exists yet
+        return { record: null };
+      }
     },
     enabled: !!userAddress && !!agentAddress && !!VOTE_REGISTRY,
   });
