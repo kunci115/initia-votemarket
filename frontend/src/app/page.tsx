@@ -5,6 +5,7 @@ import { ConnectButton } from "../components/ConnectButton";
 import { BribeBoard } from "../components/BribeBoard";
 import { UserPanel } from "../components/UserPanel";
 import { AgentPanel } from "../components/AgentPanel";
+import { ClaimPanel } from "../components/ClaimPanel";
 import { useCurrentEpoch } from "../hooks/useCurrentEpoch";
 
 function EpochBadge() {
@@ -120,6 +121,7 @@ export default function Home() {
             <div className="grid grid-cols-1 lg:grid-cols-[220px_1fr] gap-3">
               <div className="space-y-3">
                 <UserPanel address={address} username={username} />
+                <ClaimPanel address={address} />
                 <AgentPanel address={address} />
               </div>
               <BribeBoard address={address} />
