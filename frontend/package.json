@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "postinstall": "node scripts/patch-ik.js"
   },
   "dependencies": {
     "@cosmjs/cosmwasm-stargate": "^0.36.0",
