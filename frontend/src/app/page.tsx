@@ -23,6 +23,45 @@ function EpochBadge() {
   );
 }
 
+const STEPS = [
+  { phase: "deposit",      label: "1. Deposit",      desc: "Protocols lock INIT bribes" },
+  { phase: "snapshot",     label: "2. Snapshot",     desc: "VIP scores are frozen" },
+  { phase: "distribution", label: "3. Distribution", desc: "Delegate your votes here" },
+  { phase: "closed",       label: "4. Closed",       desc: "Rewards paid out" },
+];
+
+function PhaseGuide() {
+  const { data: epoch } = useCurrentEpoch();
+  const current = epoch?.phase?.toLowerCase() ?? "";
+
+  return (
+    <div className="glass-card px-4 py-3">
+      <div className="flex items-center gap-1 overflow-x-auto">
+        {STEPS.map((step, i) => {
+          const done = ["deposit","snapshot","distribution","closed"].indexOf(current) > i;
+          const active = current === step.phase;
+          return (
+            <div key={step.phase} className="flex items-center gap-1 flex-shrink-0">
+              {i > 0 && <div className={`w-8 h-px ${done ? "bg-violet-500/50" : "bg-white/[0.06]"}`} />}
+              <div className={`text-xs px-2.5 py-1.5 rounded-lg border transition-all ${
+                active  ? "bg-violet-500/15 border-violet-500/30 text-violet-300" :
+                done    ? "bg-white/[0.03] border-white/[0.05] text-slate-500 line-through" :
+                          "bg-white/[0.02] border-white/[0.04] text-slate-700"
+              }`}>
+                <span className="font-semibold">{step.label}</span>
+                <span className="hidden sm:inline text-[10px] ml-1.5 opacity-70">{step.desc}</span>
+              </div>
+            </div>
+          );
+        })}
+        {current === "distribution" && (
+          <p className="text-[10px] text-emerald-400 ml-3 flex-shrink-0">← Delegate now to earn INIT</p>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function Home() {
   const kit = useInterwovenKit();
   const address = kit?.address;
@@ -76,18 +115,15 @@ export default function Home() {
 
         {/* Connected dashboard */}
         {address && (
-          <div className="grid grid-cols-1 lg:grid-cols-[220px_1fr] gap-3">
-            <div className="space-y-3">
-              <UserPanel address={address} username={username} />
-              <AgentPanel address={address} />
-              <div className="glass-card p-3">
-                <p className="text-xs font-medium text-slate-400 mb-1">How it works</p>
-                <p className="text-xs text-slate-600 leading-relaxed">
-                  Pick a bribe → delegate votes → earn INIT when the epoch closes.
-                </p>
+          <div className="space-y-3">
+            <PhaseGuide />
+            <div className="grid grid-cols-1 lg:grid-cols-[220px_1fr] gap-3">
+              <div className="space-y-3">
+                <UserPanel address={address} username={username} />
+                <AgentPanel address={address} />
               </div>
+              <BribeBoard address={address} />
             </div>
-            <BribeBoard address={address} />
           </div>
         )}
       </main>
