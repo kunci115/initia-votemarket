@@ -123,8 +123,17 @@ export function BribeBoard({ address }: BribeBoardProps) {
               <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5m8.25 3v6.75m0 0l-3-3m3 3l3-3M3.75 7.5h16.5M12 3v4.5" />
             </svg>
           </div>
-          <p className="text-slate-500 text-sm font-medium">No bribes yet</p>
-          <p className="text-slate-700 text-xs mt-1">No offers deposited for epoch #{epoch?.id ?? "..."}</p>
+          {!epoch ? (
+            <>
+              <p className="text-slate-500 text-sm font-medium">No active epoch</p>
+              <p className="text-slate-700 text-xs mt-1">Waiting for admin to open the first epoch</p>
+            </>
+          ) : (
+            <>
+              <p className="text-slate-500 text-sm font-medium">No bribes yet</p>
+              <p className="text-slate-700 text-xs mt-1">No offers deposited for epoch #{epoch.id}</p>
+            </>
+          )}
         </div>
       )}
 
