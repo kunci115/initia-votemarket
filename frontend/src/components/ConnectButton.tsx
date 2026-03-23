@@ -7,7 +7,6 @@ interface ConnectButtonProps {
 }
 
 export function ConnectButton({ large }: ConnectButtonProps) {
-  // Guard against kit not being ready on first render (dynamic ssr:false component)
   const kit = useInterwovenKit();
   const address = kit?.address;
   const username = kit?.username;
@@ -22,33 +21,29 @@ export function ConnectButton({ large }: ConnectButtonProps) {
     return (
       <button
         onClick={() => openWallet?.()}
-        className="group flex items-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-violet-500/40 text-slate-200 text-sm font-medium px-4 py-2 rounded-xl transition-all duration-200"
+        className="flex items-center gap-2 bg-white/5 hover:bg-white/8 border border-white/10 hover:border-violet-500/30 text-slate-200 text-sm font-medium px-3.5 py-2 rounded-xl transition-all duration-200"
       >
-        {/* Connected indicator */}
-        <span className="w-2 h-2 rounded-full bg-emerald-400 pulse-dot flex-shrink-0" />
-        <span className="font-mono">{displayName}</span>
+        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 pulse-dot flex-shrink-0" />
+        <span className="font-mono text-xs">{displayName}</span>
       </button>
     );
   }
 
   if (large) {
     return (
-      <div className="flex flex-col items-center gap-3">
+      <div className="flex flex-col items-center gap-2.5">
         <button
           onClick={() => openConnect?.()}
-          className="group relative inline-flex items-center gap-3 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-semibold px-8 py-4 rounded-2xl transition-all duration-200 shadow-lg shadow-violet-900/40 hover:shadow-violet-800/60 hover:-translate-y-0.5 active:translate-y-0 text-base"
+          className="group relative inline-flex items-center gap-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-semibold px-7 py-3 rounded-xl transition-all duration-200 shadow-lg shadow-violet-900/40 hover:shadow-violet-800/50 text-sm"
         >
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
           </svg>
           Connect Wallet
-          <span className="absolute inset-0 rounded-2xl bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+          <span className="absolute inset-0 rounded-xl bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
         </button>
-        <p className="text-xs text-slate-500 flex items-center gap-1.5">
-          <svg className="w-3.5 h-3.5 text-amber-500/70" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
-          </svg>
-          Use <span className="text-slate-400 font-medium">Keplr</span> or <span className="text-slate-400 font-medium">Leap</span> wallet — MetaMask is EVM-only
+        <p className="text-xs text-slate-600">
+          Use <span className="text-slate-400">Keplr</span> or <span className="text-slate-400">Leap</span> — MetaMask is EVM only
         </p>
       </div>
     );
@@ -57,7 +52,7 @@ export function ConnectButton({ large }: ConnectButtonProps) {
   return (
     <button
       onClick={() => openConnect?.()}
-      className="group relative flex items-center gap-2 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white text-sm font-semibold px-4 py-2 rounded-xl transition-all duration-200 shadow-md shadow-violet-900/30 hover:shadow-violet-800/50"
+      className="group relative flex items-center gap-2 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white text-xs font-semibold px-3.5 py-2 rounded-xl transition-all duration-200 shadow-md shadow-violet-900/30"
     >
       Connect Wallet
       <span className="absolute inset-0 rounded-xl bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />

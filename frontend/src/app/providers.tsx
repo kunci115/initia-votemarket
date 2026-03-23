@@ -11,7 +11,6 @@ const queryClient = new QueryClient();
 const wagmiConfig = createConfig({
   chains: [mainnet],
   transports: { [mainnet.id]: http() },
-  multiInjectedProviderDiscovery: false,
 });
 
 // InterwovenKit accesses browser-only globals — must not SSR
