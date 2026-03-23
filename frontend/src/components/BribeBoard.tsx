@@ -10,7 +10,7 @@ interface BribeBoardProps {
 }
 
 export function BribeBoard({ address }: BribeBoardProps) {
-  const { signAndBroadcast } = useInterwovenKit();
+  const { requestTxBlock } = useInterwovenKit();
   const { data: epoch } = useCurrentEpoch();
   const { data: offers, isLoading } = useBribeOffers(epoch?.id);
   const [delegating, setDelegating] = useState<string | null>(null);
@@ -19,8 +19,8 @@ export function BribeBoard({ address }: BribeBoardProps) {
     if (!epoch) return;
     setDelegating(protocolAddr);
     try {
-      await signAndBroadcast({
-        msgs: [
+      await requestTxBlock({
+        messages: [
           {
             typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
             value: {

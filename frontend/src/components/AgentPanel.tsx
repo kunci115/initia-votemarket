@@ -11,16 +11,15 @@ interface AgentPanelProps {
 }
 
 export function AgentPanel({ address }: AgentPanelProps) {
-  const { signAndBroadcast } = useInterwovenKit();
+  const { requestTxBlock } = useInterwovenKit();
   const { data: sessionKey, refetch } = useSessionKey(address, AGENT_ADDRESS);
   const [loading, setLoading] = useState(false);
 
   const handleEnableAgent = async () => {
     setLoading(true);
     try {
-      // Register session key in VoteRegistry contract
-      await signAndBroadcast({
-        msgs: [
+      await requestTxBlock({
+        messages: [
           {
             typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
             value: {
@@ -53,8 +52,8 @@ export function AgentPanel({ address }: AgentPanelProps) {
   const handleRevokeAgent = async () => {
     setLoading(true);
     try {
-      await signAndBroadcast({
-        msgs: [
+      await requestTxBlock({
+        messages: [
           {
             typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
             value: {

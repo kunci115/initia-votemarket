@@ -8,28 +8,23 @@ interface ConnectButtonProps {
 }
 
 export function ConnectButton({ large }: ConnectButtonProps) {
-  const { address, username, connect, disconnect } = useInterwovenKit();
+  const { address, username, openConnect, openWallet } = useInterwovenKit();
 
   if (address) {
     const displayName = username ? `${username}.init` : `${address.slice(0, 8)}...${address.slice(-4)}`;
     return (
-      <div className="flex items-center gap-3">
-        <span className="text-sm text-gray-300 bg-gray-800 px-3 py-1.5 rounded-lg">
-          {displayName}
-        </span>
-        <button
-          onClick={disconnect}
-          className="text-xs text-gray-500 hover:text-gray-300 transition-colors"
-        >
-          Disconnect
-        </button>
-      </div>
+      <button
+        onClick={openWallet}
+        className="text-sm text-gray-300 bg-gray-800 px-3 py-1.5 rounded-lg hover:bg-gray-700 transition-colors"
+      >
+        {displayName}
+      </button>
     );
   }
 
   return (
     <button
-      onClick={connect}
+      onClick={openConnect}
       className={clsx(
         "bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-lg transition-colors",
         large ? "px-8 py-3 text-base" : "px-4 py-2 text-sm"

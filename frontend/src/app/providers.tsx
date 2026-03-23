@@ -1,47 +1,40 @@
 "use client";
 
-import { InterwovenKitProvider as IKProvider } from "@initia/interwovenkit-react";
+import { useEffect, type PropsWithChildren } from "react";
+import { createConfig, http, WagmiProvider } from "wagmi";
+import { mainnet } from "wagmi/chains";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import {
+  initiaPrivyWalletConnector,
+  injectStyles,
+  InterwovenKitProvider as IKProvider,
+  TESTNET,
+} from "@initia/interwovenkit-react";
+import InterwovenKitStyles from "@initia/interwovenkit-react/styles.js";
 
-// Initia testnet config — replace with mainnet when ready
-const INITIA_CHAIN_CONFIG = {
-  chainId: "initiation-2",
-  chainName: "Initia Testnet",
-  rpc: "https://rpc.testnet.initia.xyz",
-  rest: "https://lcd.testnet.initia.xyz",
-  bech32Prefix: "init",
-  currencies: [
-    {
-      coinDenom: "INIT",
-      coinMinimalDenom: "uinit",
-      coinDecimals: 6,
-    },
-  ],
-  feeCurrencies: [
-    {
-      coinDenom: "INIT",
-      coinMinimalDenom: "uinit",
-      coinDecimals: 6,
-      gasPriceStep: { low: 0.015, average: 0.025, high: 0.04 },
-    },
-  ],
-  stakeCurrency: {
-    coinDenom: "INIT",
-    coinMinimalDenom: "uinit",
-    coinDecimals: 6,
-  },
-};
+const wagmiConfig = createConfig({
+  connectors: [initiaPrivyWalletConnector],
+  chains: [mainnet],
+  transports: { [mainnet.id]: http() },
+});
 
-export function InterwovenKitProvider({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+const queryClient = new QueryClient();
+
+export function InterwovenKitProvider({ children }: PropsWithChildren) {
+  useEffect(() => {
+    injectStyles(InterwovenKitStyles);
+  }, []);
+
   return (
-    <IKProvider
-      chainId={INITIA_CHAIN_CONFIG.chainId}
-      // InterwovenKit handles wallet connection, social login, session keys
-    >
-      {children}
-    </IKProvider>
+    <QueryClientProvider client={queryClient}>
+      <WagmiProvider config={wagmiConfig}>
+        <IKProvider
+          {...TESTNET}
+          defaultChainId={process.env.NEXT_PUBLIC_CHAIN_ID ?? "votemarket-1"}
+        >
+          {children}
+        </IKProvider>
+      </WagmiProvider>
+    </QueryClientProvider>
   );
 }
