@@ -1,16 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { useInterwovenKit } from "@initia/interwovenkit-react";
 import { useBribeOffers } from "../hooks/useBribeOffers";
 import { useCurrentEpoch } from "../hooks/useCurrentEpoch";
+import { execContract } from "../lib/tx";
 
 interface BribeBoardProps {
   address: string;
 }
 
 export function BribeBoard({ address }: BribeBoardProps) {
-  const { requestTxBlock } = useInterwovenKit();
   const { data: epoch } = useCurrentEpoch();
   const { data: offers, isLoading } = useBribeOffers(epoch?.id);
   const [delegating, setDelegating] = useState<string | null>(null);
@@ -19,27 +18,25 @@ export function BribeBoard({ address }: BribeBoardProps) {
     if (!epoch) return;
     setDelegating(protocolAddr);
     try {
-      await requestTxBlock({
-        messages: [
-          {
-            typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
-            value: {
-              sender: address,
-              contract: process.env.NEXT_PUBLIC_VOTE_REGISTRY_ADDRESS,
-              msg: Buffer.from(
-                JSON.stringify({
-                  delegate_votes: {
-                    epoch_id: epoch.id,
-                    protocol: protocolAddr,
-                    on_behalf_of: null,
-                  },
-                })
-              ).toString("base64"),
-              funds: [],
-            },
+      await execContract([
+        {
+          typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
+          value: {
+            sender: address,
+            contract: process.env.NEXT_PUBLIC_VOTE_REGISTRY_ADDRESS ?? "",
+            msg: Buffer.from(
+              JSON.stringify({
+                delegate_votes: {
+                  epoch_id: epoch.id,
+                  protocol: protocolAddr,
+                  on_behalf_of: null,
+                },
+              })
+            ).toString("base64"),
+            funds: [],
           },
-        ],
-      });
+        },
+      ]);
     } catch (e) {
       console.error("Delegation failed:", e);
     } finally {

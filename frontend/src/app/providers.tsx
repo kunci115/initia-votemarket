@@ -28,10 +28,7 @@ export function InterwovenKitProvider({ children }: PropsWithChildren) {
   return (
     <QueryClientProvider client={queryClient}>
       <WagmiProvider config={wagmiConfig}>
-        <IKProvider
-          {...TESTNET}
-          defaultChainId={process.env.NEXT_PUBLIC_CHAIN_ID ?? "votemarket-1"}
-        >
+        <IKProvider {...TESTNET}>
           {children}
         </IKProvider>
       </WagmiProvider>

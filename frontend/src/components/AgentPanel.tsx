@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { useInterwovenKit } from "@initia/interwovenkit-react";
 import { useSessionKey } from "../hooks/useSessionKey";
+import { execContract } from "../lib/tx";
 
 const AGENT_ADDRESS = process.env.NEXT_PUBLIC_AGENT_ADDRESS ?? "";
 
@@ -11,36 +11,33 @@ interface AgentPanelProps {
 }
 
 export function AgentPanel({ address }: AgentPanelProps) {
-  const { requestTxBlock } = useInterwovenKit();
   const { data: sessionKey, refetch } = useSessionKey(address, AGENT_ADDRESS);
   const [loading, setLoading] = useState(false);
 
   const handleEnableAgent = async () => {
     setLoading(true);
     try {
-      await requestTxBlock({
-        messages: [
-          {
-            typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
-            value: {
-              sender: address,
-              contract: process.env.NEXT_PUBLIC_VOTE_REGISTRY_ADDRESS,
-              msg: Buffer.from(
-                JSON.stringify({
-                  register_session_key: {
-                    agent: AGENT_ADDRESS,
-                    can_delegate: true,
-                    can_claim: true,
-                    max_weight_change_bps: 10000,
-                    allowed_protocols: [],
-                  },
-                })
-              ).toString("base64"),
-              funds: [],
-            },
+      await execContract([
+        {
+          typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
+          value: {
+            sender: address,
+            contract: process.env.NEXT_PUBLIC_VOTE_REGISTRY_ADDRESS ?? "",
+            msg: Buffer.from(
+              JSON.stringify({
+                register_session_key: {
+                  agent: AGENT_ADDRESS,
+                  can_delegate: true,
+                  can_claim: true,
+                  max_weight_change_bps: 10000,
+                  allowed_protocols: [],
+                },
+              })
+            ).toString("base64"),
+            funds: [],
           },
-        ],
-      });
+        },
+      ]);
       await refetch();
     } catch (e) {
       console.error("Failed to enable agent:", e);
@@ -52,23 +49,19 @@ export function AgentPanel({ address }: AgentPanelProps) {
   const handleRevokeAgent = async () => {
     setLoading(true);
     try {
-      await requestTxBlock({
-        messages: [
-          {
-            typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
-            value: {
-              sender: address,
-              contract: process.env.NEXT_PUBLIC_VOTE_REGISTRY_ADDRESS,
-              msg: Buffer.from(
-                JSON.stringify({
-                  revoke_session_key: { agent: AGENT_ADDRESS },
-                })
-              ).toString("base64"),
-              funds: [],
-            },
+      await execContract([
+        {
+          typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
+          value: {
+            sender: address,
+            contract: process.env.NEXT_PUBLIC_VOTE_REGISTRY_ADDRESS ?? "",
+            msg: Buffer.from(
+              JSON.stringify({ revoke_session_key: { agent: AGENT_ADDRESS } })
+            ).toString("base64"),
+            funds: [],
           },
-        ],
-      });
+        },
+      ]);
       await refetch();
     } catch (e) {
       console.error("Failed to revoke agent:", e);
