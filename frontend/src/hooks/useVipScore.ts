@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
-const RPC = process.env.NEXT_PUBLIC_RPC ?? "https://rpc.testnet.initia.xyz";
+const RPC = process.env.NEXT_PUBLIC_REST ?? "https://lcd.testnet.initia.xyz";
 const VOTE_REGISTRY = process.env.NEXT_PUBLIC_VOTE_REGISTRY_ADDRESS ?? "";
 
 export function useVipScore(address?: string, epochId?: number) {

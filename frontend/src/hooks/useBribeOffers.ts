@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
-const RPC = process.env.NEXT_PUBLIC_RPC ?? "https://rpc.testnet.initia.xyz";
+const RPC = process.env.NEXT_PUBLIC_REST ?? "https://lcd.testnet.initia.xyz";
 const BRIBE_VAULT = process.env.NEXT_PUBLIC_BRIBE_VAULT_ADDRESS ?? "";
 
 export interface BribeOffer {

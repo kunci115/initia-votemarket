@@ -5,6 +5,8 @@ import { useBribeOffers } from "../hooks/useBribeOffers";
 import { useCurrentEpoch } from "../hooks/useCurrentEpoch";
 import { execContract } from "../lib/tx";
 
+const VOTE_REGISTRY = process.env.NEXT_PUBLIC_VOTE_REGISTRY_ADDRESS ?? "";
+
 interface BribeBoardProps {
   address: string;
 }
@@ -13,32 +15,22 @@ export function BribeBoard({ address }: BribeBoardProps) {
   const { data: epoch } = useCurrentEpoch();
   const { data: offers, isLoading } = useBribeOffers(epoch?.id);
   const [delegating, setDelegating] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const handleDelegate = async (protocolAddr: string) => {
     if (!epoch) return;
     setDelegating(protocolAddr);
+    setError(null);
     try {
-      await execContract([
-        {
-          typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
-          value: {
-            sender: address,
-            contract: process.env.NEXT_PUBLIC_VOTE_REGISTRY_ADDRESS ?? "",
-            msg: Buffer.from(
-              JSON.stringify({
-                delegate_votes: {
-                  epoch_id: epoch.id,
-                  protocol: protocolAddr,
-                  on_behalf_of: null,
-                },
-              })
-            ).toString("base64"),
-            funds: [],
-          },
+      await execContract(address, VOTE_REGISTRY, {
+        delegate_votes: {
+          epoch_id: epoch.id,
+          protocol: protocolAddr,
+          on_behalf_of: null,
         },
-      ]);
-    } catch (e) {
-      console.error("Delegation failed:", e);
+      });
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : "Delegation failed");
     } finally {
       setDelegating(null);
     }
@@ -58,10 +50,14 @@ export function BribeBoard({ address }: BribeBoardProps) {
         </div>
       </div>
 
-      {isLoading && (
-        <div className="text-center py-12 text-gray-500 text-sm">
-          Loading bribe offers...
+      {error && (
+        <div className="mb-3 bg-red-900/30 border border-red-800 rounded-lg px-3 py-2 text-xs text-red-400">
+          {error}
         </div>
+      )}
+
+      {isLoading && (
+        <div className="text-center py-12 text-gray-500 text-sm">Loading bribe offers...</div>
       )}
 
       {!isLoading && (!offers || offers.length === 0) && (
@@ -82,11 +78,8 @@ export function BribeBoard({ address }: BribeBoardProps) {
             >
               <div>
                 <p className="text-sm font-medium text-white">{shortAddr}</p>
-                <p className="text-xs text-gray-400 mt-0.5">
-                  {totalInit} INIT total bribe
-                </p>
+                <p className="text-xs text-gray-400 mt-0.5">{totalInit} INIT total bribe</p>
               </div>
-
               <button
                 onClick={() => handleDelegate(offer.protocol)}
                 disabled={delegating === offer.protocol || epoch?.phase !== "Distribution"}
