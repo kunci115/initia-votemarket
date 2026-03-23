@@ -1,0 +1,32 @@
+# Secrets — NEVER commit
+deploy/wallet-keys.json
+deploy/rollup-config.json
+deploy/artifacts.json
+deploy/artifacts-config.json
+deploy/contract-addresses.json
+**/.env
+**/.env.local
+**/.env.*.local
+
+# Build artifacts
+contracts/target/
+optimizer-workspace/target/
+optimizer-workspace/Cargo.lock
+optimizer-workspace/contracts/
+optimizer-workspace/artifacts/
+frontend/.next/
+frontend/node_modules/
+agent/node_modules/
+agent/dist/
+deploy/node_modules/
+
+# Rollup node data
+.minitia/
+.opinit/
+deploy/weave.tar.gz
+deploy/launch.log
+
+# OS / editor
+.DS_Store
+.vscode/
+*.swp

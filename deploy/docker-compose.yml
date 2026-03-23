@@ -1,0 +1,33 @@
+version: "3.8"
+
+services:
+  rollup:
+    build: .
+    container_name: votemarket-rollup
+    volumes:
+      - minitia_data:/root/.minitia
+      - opinit_data:/root/.opinit
+    ports:
+      - "26656:26656"   # P2P
+      - "26657:26657"   # RPC
+      - "1317:1317"     # REST
+      - "9090:9090"     # gRPC
+    restart: unless-stopped
+
+  # OPinit bots (start after rollup is running)
+  opinit:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: votemarket-opinit
+    volumes:
+      - opinit_data:/root/.opinit
+    depends_on:
+      - rollup
+    command: ["weave", "opinit", "start"]
+    profiles: ["opinit"]
+    restart: unless-stopped
+
+volumes:
+  minitia_data:
+  opinit_data:

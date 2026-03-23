@@ -1,0 +1,25 @@
+{
+  "project_name": "Votemarket.init",
+  "description": "VIP gauge bribe marketplace with AI yield optimization agent. Protocols bid INIT for user voting power. Users earn passive yield; an AI agent auto-maximizes returns every epoch via session key auto-signing.",
+  "track": [
+    "DeFi",
+    "AI"
+  ],
+  "team": [],
+  "contracts": {
+    "epoch_controller": "init153r9tg33had5c5s54sqzn879xww2q2egektyqnpj6nwxt8wls70qqzjz9a",
+    "bribe_vault": "init1f6jlx7d9y408tlzue7r2qcf79plp549n30yzqjajjud8vm7m4vdsnygfaq",
+    "vote_registry": "init124tapgv8wsn5t3rv2cvywh4ckkmj6mc6fkya005qjmshnzewwm9q0jqen7"
+  },
+  "rollup_chain_id": "votemarket-1",
+  "bridge_id": 1696,
+  "bridge_address": "init1zu5ztw75v6q6jwrm2kusc5vxwavn4w9qx3v77kze2exm0tnpldfs97d382",
+  "deployment_link": "https://scan.initia.xyz/initiation-2/accounts/init1zu5ztw75v6q6jwrm2kusc5vxwavn4w9qx3v77kze2exm0tnpldfs97d382",
+  "interwovenkit_used": true,
+  "initia_native_features": [
+    "auto_signing_session_ux",
+    "initia_usernames"
+  ],
+  "repo": "",
+  "demo_video": ""
+}

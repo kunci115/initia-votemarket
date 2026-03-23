@@ -1,0 +1,83 @@
+#!/usr/bin/expect -f
+# Automates weave rollup launch interactive TUI prompts
+
+set timeout 600
+log_user 1
+
+spawn weave rollup launch --with-config /app/rollup-config.json --vm wasm
+
+expect {
+    # Gas station setup — select default "Generate new account"
+    "Enter to select" {
+        sleep 0.5
+        send "\r"
+        exp_continue
+    }
+    # After gas station generated, must type the word "continue"
+    "Type `continue` to proceed" {
+        sleep 0.5
+        send "continue\r"
+        exp_continue
+    }
+    "please type" {
+        sleep 0.5
+        send "continue\r"
+        exp_continue
+    }
+    # Any yes/no confirmation
+    "yes/no" {
+        send "yes\r"
+        exp_continue
+    }
+    "Proceed" {
+        send "\r"
+        exp_continue
+    }
+    # Downloading minitiad binary — takes several minutes
+    "Downloading" {
+        set timeout 600
+        exp_continue
+    }
+    "Extracting" {
+        set timeout 300
+        exp_continue
+    }
+    "Initializing" {
+        set timeout 300
+        exp_continue
+    }
+    "Creating" {
+        set timeout 300
+        exp_continue
+    }
+    "Registering" {
+        set timeout 300
+        exp_continue
+    }
+    "txhash" {
+        exp_continue
+    }
+    "bridge_id" {
+        exp_continue
+    }
+    "Successfully" {
+        exp_continue
+    }
+    "Starting" {
+        exp_continue
+    }
+    "launched" {
+        puts "\n=== LAUNCH COMPLETE ==="
+    }
+    "Error" {
+        puts "\n=== ERROR DETECTED ==="
+        exit 1
+    }
+    timeout {
+        puts "\n=== TIMEOUT ==="
+        exit 1
+    }
+    eof {
+        puts "\n=== PROCESS ENDED ==="
+    }
+}

@@ -1,0 +1,19 @@
+{
+  "name": "votemarket-deploy",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "gen-wallets": "node scripts/gen-wallets.mjs",
+    "launch": "docker compose up --build",
+    "launch-detached": "docker compose up --build -d",
+    "logs": "docker compose logs -f rollup",
+    "stop": "docker compose down"
+  },
+  "dependencies": {
+    "@cosmjs/cosmwasm-stargate": "^0.38.1",
+    "@cosmjs/crypto": "^0.32.0",
+    "@cosmjs/proto-signing": "^0.32.0",
+    "@cosmjs/stargate": "^0.38.1"
+  }
+}

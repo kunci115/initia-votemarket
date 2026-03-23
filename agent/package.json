@@ -1,0 +1,22 @@
+{
+  "name": "votemarket-agent",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "start": "ts-node src/index.ts",
+    "dev": "ts-node --watch src/index.ts",
+    "build": "tsc"
+  },
+  "dependencies": {
+    "@initia/initia.js": "^0.2.0",
+    "@cosmjs/stargate": "^0.32.0",
+    "@cosmjs/proto-signing": "^0.32.0",
+    "axios": "^1.6.0",
+    "dotenv": "^16.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5",
+    "@types/node": "^20",
+    "ts-node": "^10"
+  }
+}
