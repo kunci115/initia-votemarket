@@ -74,3 +74,16 @@ export async function execContract(
   const result = await client.execute(sender, contract, msg, "auto", undefined, funds);
   return result.transactionHash;
 }
+
+/** Returns the Keplr/Leap address for votemarket-1 (may differ from InterwovenKit address). */
+export async function getKeplrAddress(): Promise<string | null> {
+  try {
+    const wallet = window.keplr ?? window.leap;
+    if (!wallet) return null;
+    const signer = wallet.getOfflineSigner(CHAIN_ID);
+    const accounts = await signer.getAccounts();
+    return accounts[0]?.address ?? null;
+  } catch {
+    return null;
+  }
+}

@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSessionKey } from "../hooks/useSessionKey";
-import { execContract } from "../lib/tx";
+import { execContract, getKeplrAddress } from "../lib/tx";
 
 const AGENT_ADDRESS = process.env.NEXT_PUBLIC_AGENT_ADDRESS ?? "";
 const VOTE_REGISTRY = process.env.NEXT_PUBLIC_VOTE_REGISTRY_ADDRESS ?? "";
@@ -12,7 +12,14 @@ interface AgentPanelProps {
 }
 
 export function AgentPanel({ address }: AgentPanelProps) {
-  const { data: sessionKey, refetch } = useSessionKey(address, AGENT_ADDRESS);
+  // The address from InterwovenKit may differ from the Keplr signing address.
+  // Use the Keplr address for the on-chain session key query.
+  const [signerAddress, setSignerAddress] = useState<string>(address);
+  useEffect(() => {
+    getKeplrAddress().then(a => { if (a) setSignerAddress(a); });
+  }, [address]);
+
+  const { data: sessionKey, refetch } = useSessionKey(signerAddress, AGENT_ADDRESS);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [txHash, setTxHash] = useState<string | null>(null);
@@ -31,7 +38,6 @@ export function AgentPanel({ address }: AgentPanelProps) {
         },
       });
       setTxHash(hash);
-      // Wait for block inclusion before refetching
       await new Promise(r => setTimeout(r, 3000));
       await refetch();
     } catch (e: unknown) {
