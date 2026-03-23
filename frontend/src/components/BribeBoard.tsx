@@ -42,7 +42,7 @@ export function BribeBoard({ address }: BribeBoardProps) {
   };
 
   const phase = phaseBadge(epoch?.phase);
-  const isDistribution = epoch?.phase === "Distribution";
+  const isDistribution = epoch?.phase?.toLowerCase() === "distribution";
   const totalTvl = ((offers?.reduce((s, o) => s + Number(o.total_amount), 0) ?? 0) / 1_000_000).toFixed(2);
 
   return (
